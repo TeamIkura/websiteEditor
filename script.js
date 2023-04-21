@@ -45,8 +45,8 @@ function getJSON(){
 		}
 	};
 	//このファイルパスは仮のものであるため、後に正規の場所に移行すること。また、ブラウザ上ではローカルファイルは同一生成元ポリシーにより受け付けられない。
-	// req.open("GET", "https://arrkmekawa.github.io/mekawa/assets/data.json", false);
-	req.open("GET", "../website/assets/data.json", false);
+	req.open("GET", "https://teamikura.github.io/website/assets/data.json", false);
+	// req.open("GET", "../website/assets/data.json", false);
 	req.send(null);
 }
 
@@ -221,6 +221,7 @@ function refreshNotePreview(pos){
 	let date = new Date()
 	date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
 	let imgs = $('noteImgs').value;
+	console.log(imgs);
 	imgs = imgs.split(/\n/);
 	let elemImgs = '';
 	if(imgs[0] != ''){
@@ -337,6 +338,86 @@ function exportJson(){
 	setTimeout(() => {
 		URL.revokeObjectURL(url);
 	}, 1E4);
+}
+
+// 画像をギハブから参照する
+let pointElemId = "";
+function referImgURL(pointer, operation, event){
+	console.log(pointer);
+	pointElemId = pointer;
+	if(operation == 'choose'){
+		if(event.target.matches('.closeBtn')){
+			console.log('閉じるボタンが押されたよ');
+			operation = 'close';
+		}else if(event.target.matches('.refreshBtn')){
+			refreshRepImgs();
+		}else if(event.target.closest('.referImgContent')){
+			console.log('要素内が押されたよ');
+		}else{
+			console.log('要素外が押されたよ');
+			operation = 'close';
+		}
+	}
+
+	if(operation == 'open'){
+		$('referImgContainer').setAttribute('style', 'top:0;opacity:1');
+	}else if(operation == 'close'){
+		$('referImgContainer').setAttribute('style', 'top:-100vh;opacity:0');
+	}
+}
+
+// 参照ウィンドウの画像を更新する
+let imagePaths;
+const directoryPath = 'assets/imgs/' // 本鯖用
+// const directoryPath = 'assets' // デバッグ用
+function refreshRepImgs(){
+	imagePaths = [];
+	let xhr = new XMLHttpRequest();
+
+	xhr.open('GET', directoryPath);
+	xhr.onload = function() {
+		if(xhr.status === 200){
+			let parser = new DOMParser();
+			let responseDoc = parser.parseFromString(xhr.responseText, 'text/html');
+
+			let fileList = responseDoc.querySelectorAll('a');
+			fileList.forEach(function(link){
+				const fileName = link.getAttribute('href');
+				const filePath = fileName.split('\\').pop();
+				let extension = fileName.split('.').pop().toLowerCase();
+				if(extension == 'png' || extension == 'jpg' || extension == 'gif'){
+					imagePaths.push('https://teamikura.github.io/website/assets/imgs/' + filePath);
+				}
+			});
+			console.log(imagePaths);
+			let elemImgList = $('imageList');
+			elemImgList.innerHTML = '';
+			for(let i = 0; i < imagePaths.length; i++){
+				elemImgList.innerHTML += '<button onclick="insertImgURL(\''+ imagePaths[i] +'\')"><img src="' + imagePaths[i] + '"></button>'
+			}
+		} else {
+			console.error('Request failed. Returned status of ' + xhr.statusText);
+		}
+	};
+	xhr.onerror = function(){
+		console.error(xhr.statusText);
+	};
+	xhr.send();
+}
+refreshRepImgs();
+
+function insertImgURL(value){
+	console.log(value);
+	if(pointElemId == 'userAvator'){
+		$('userAvator').value = value;
+		refreshUserPreview(0);
+	}else if(pointElemId == 'noteImgs'){
+		if($('noteImgs').value == ''){
+			$('noteImgs').value += value;
+		}else $('noteImgs').value += ('\n' + value);
+		refreshNotePreview(0);
+	}
+	referImgURL(null, 'close', null);
 }
 
 function $(elemid){
