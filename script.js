@@ -368,7 +368,7 @@ function referImgURL(pointer, operation, event){
 
 // 参照ウィンドウの画像を更新する
 let imagePaths;
-const directoryPath = 'https://teamikura.github.io/website/assets/imgs/' // 本鯖用
+const directoryPath = '../website/assets/imgs/' // 本鯖用
 // const directoryPath = 'assets' // デバッグ用
 function refreshRepImgs(){
 	imagePaths = [];
