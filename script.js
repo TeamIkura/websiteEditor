@@ -1,5 +1,6 @@
 console.log("-----");
 
+const jsVersion = 0.23;
 let jsonData; // data.jsonから取り込んだデータ
 let userdata = new Object(); // ユーザーをIDで並べたもの
 let userId; // 編集するユーザーの番号
@@ -68,7 +69,7 @@ function buildUserData(){
 function buildCommonPart(){
 	let elemFooter = $('footer');
 	let lastUpdated = elemFooter.innerText;
-	let htmlFooter = '<p>(c)2020?-2023 伊倉町開発プロジェクト<br>' + lastUpdated + ' 芽河製作所 Arrk</p>';
+	let htmlFooter = '<p>(c)2020?-2023 伊倉町開発プロジェクト<br>' + lastUpdated + ' 芽河製作所 Arrk<br>Version: ' + jsVersion + '</p>';
 	elemFooter.innerHTML = htmlFooter;
 }
 
@@ -368,8 +369,7 @@ function referImgURL(pointer, operation, event){
 
 // 参照ウィンドウの画像を更新する
 let imagePaths;
-const directoryPath = '../website/assets/imgs/' // 本鯖用
-// const directoryPath = 'assets' // デバッグ用
+const directoryPath = 'assets/imgs/' // 本鯖用
 function refreshRepImgs(){
 	imagePaths = [];
 	let xhr = new XMLHttpRequest();
@@ -386,7 +386,7 @@ function refreshRepImgs(){
 				const filePath = fileName.split('\\').pop();
 				let extension = fileName.split('.').pop().toLowerCase();
 				if(extension == 'png' || extension == 'jpg' || extension == 'gif'){
-					imagePaths.push('https://teamikura.github.io/website/assets/imgs/' + filePath);
+					imagePaths.push('https://teamikura.github.io/websiteEditor/assets/imgs/' + filePath);
 				}
 			});
 			console.log(imagePaths);
